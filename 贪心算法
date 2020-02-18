@@ -1,0 +1,42 @@
+//背包问题，运走最大价值的财宝 
+//贪心算法，运走性价比（价值/重量）高的宝物 
+#include <iostream>
+#include <algorithm>
+using namespace std;
+const int M = 1000005;  
+
+struct three{  
+	double weight;
+	double value;
+	double per;  //性价比 
+}s[M];   //起个数组别名方便计算个数 ,这种格式要学会 
+
+bool compare(three a,three b){
+		return a.per>b.per;   //定义从大到小排序 
+}
+
+int main(void){
+	int n;  //宝物总个数
+	double m;   //驴子的最大载重量 
+	cout<<"请输入宝物总个数和驴子最大载重量："<<endl;
+	cin>>n>>m;
+	cout<<"请输入宝物的重量和价值(用空格分开):"<<endl;
+	for(int i=0; i<n; i++){
+		cin>>s[i].weight>>s[i].value;
+		s[i].per = s[i].value/s[i].weight;
+	} 
+	sort(s,s+n,compare);     //sort函数的参数是待排序数组的首地址和尾地址 
+	double sum = 0.0;  //运走的宝贝
+	for(int i=0; i<n; i++){     //开始贪心算法 
+		if(m>s[i].weight){
+			m = m - s[i].weight;
+			sum = sum + s[i].value;
+		} else {     // 部分装入,到结尾了 
+			sum = sum + m*s[i].per;
+			break;    
+		}
+	} 
+	cout<<"可运走的宝物最大价值为："<<sum<<endl; 
+	return 0;
+}
+//该算法的时间复杂度是O(nlogn) 
