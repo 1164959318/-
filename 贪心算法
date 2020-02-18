@@ -9,10 +9,10 @@ struct three{
 	double weight;
 	double value;
 	double per;  //性价比 
-}s[M];   //起个数组别名方便计算个数 ,这种格式要学会 
+}s[M];   //起个数组别名方便计算个数
 
 bool compare(three a,three b){
-		return a.per>b.per;   //定义从大到小排序 
+	return a.per>b.per;   //定义从大到小排序 
 }
 
 int main(void){
