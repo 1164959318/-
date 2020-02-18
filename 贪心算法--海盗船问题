@@ -1,0 +1,28 @@
+#include <iostream>
+#include <algorithm>
+//海盗船问题，把尽可能多的古董搬上船。
+using namespace std;
+const int N = 100005;  //古董的总重量 
+
+int main(void){
+	double w[N];
+	double c;   //船的最大载重量 
+	int n;   //古董的总个数
+	cout<<"请输入船的最大载重量c以及个数n:"<<endl;
+	cin>>c>>n;
+	cout<<"请输入每个古董的重量(用空格分开)："<<endl;
+	for(int i=0; i<n; i++){   //因为i是从0开始的，所以不能i<=n  
+		cin>>w[i];
+	} 
+	sort(w,w+n);  //对n件古董进行重量排序。地址 
+	double temp = 0.0;   //已经装载到船上的重量 
+	int ans = 0;   //已经装载到船上的个数
+	for(int i=0; i<n; i++){
+		temp = temp + w[i];
+		if(temp<=c){
+			ans++;
+		}else break;
+	} 
+	cout<<"能装入的最大古董数量为："<<ans<<endl;
+	return 0; 
+}
