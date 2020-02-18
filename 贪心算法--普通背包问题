@@ -39,4 +39,5 @@ int main(void){
 	cout<<"可运走的宝物最大价值为："<<sum<<endl; 
 	return 0;
 }
+
 //该算法的时间复杂度是O(nlogn) 
