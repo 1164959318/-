@@ -1,0 +1,78 @@
+#include <iostream>
+#include <algorithm>
+//在有限的时间里召开更多的会议 
+using namespace std;
+
+struct meeting{
+	int start;
+	int end;
+	int num;  //记录会议的编号
+}meet[1005];  //会议最大个数为1005 
+
+//sort函数默认升序
+
+class setMeet{ //类名setMeet 
+	public:
+		void init();
+		void solve();
+	private:  //private里的变量或者是函数只能在你所定义的class内使用 
+		int n;  //会议总数 
+		int ans; //最大的安排会议总数 
+};
+
+void setMeet::init(){
+	//输入函数   
+	int s,e;
+	cout<<"输入会议总数"<<endl;
+	cin>>n;
+	cout<<"输入每个会议的开始时间和结束时间(以空格分开)："<<endl;
+	for(int i=0; i<n; ++i){
+		cin>>s>>e;
+		meet[i].start = s;
+		meet[i].end = e;
+		meet[i].num = i+1;  //会议编号是从1开始的，所以+1. 
+	}
+}
+
+bool compare(meeting x,meeting y){
+	//如果结束时间相等，那么把开始时间由 从大到小 排序 
+	if(x.end == y.end){   
+		return x.start > y.start;
+	} 
+	// 结束时间按 从小到大 开始排序 
+	return x.end < y.end;
+}
+
+void setMeet::solve(){
+	//贪心算法 
+	sort(meet,meet+n,compare); 
+	cout<<"排完序的会议时间如下："<<endl;
+	cout<<"会议编号"<<"开始时间"<<"结束时间"<<endl;
+	for(int i=0; i<n; i++){
+		cout<<"  "<<meet[i].num<<"\t\t"<<meet[i].start<<"\t\t"<<meet[i].end<<endl;
+	}
+	cout<<"——————————————————"<<endl;
+	cout<<"选择会议的过程："<<endl;
+	//先选择第一个会议，把头开好 
+	cout<<"  选择第"<<meet[0].num<<"个会议"<<endl;
+	ans = 1;
+	int last = meet[0].end;
+	for(int i=0; i<n; ++i){
+		if(meet[i].start >= last){
+			ans++;
+			//更新 
+			last = meet[i].end;
+			cout<<"  选择第"<<meet[i].num<<"个会议"<<endl; 
+		}
+	} 
+	cout<<"最多可选择"<<ans <<"个会议"<<endl; 
+} 
+
+int main(void) {
+	//定义一个别名 
+	setMeet sm;
+	sm.init();
+	sm.solve(); 
+	return 0;
+}
+//时间复杂度：O(nlogn) 
