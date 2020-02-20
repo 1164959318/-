@@ -1,0 +1,105 @@
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <windows.h>
+#include <stack>
+//单源最短路径(迪杰斯特拉，可以近似认为是贪心算法)
+using namespace std;
+const int N = 100;
+const int INF = 1e7;
+
+//dist[]:记录原点u到某顶点的最短路径长度。map[][]：图对应的带权邻接矩阵
+int map[N][N],dist[N],p[N];
+//n为城市的个数，m为城市间路线的条数 
+int n,m; 
+//flag判断剩余顶点是否加入到集合S 
+bool flag[N];
+
+void Dijkstra(int u){  //u是原点 
+	for(int i=1; i<=n; i++){  //顶点从1开始 
+		dist[i] = map[u][i];   
+		flag[i] = false;                                  
+		if(dist[i] == INF){
+			p[i] = -1;
+		}else{
+			p[i] = u;
+		}
+	} 
+	dist[u] = 0;
+	flag[u] = true;
+	for(int i=1; i<=n; i++){
+		int temp = INF;
+		int t = u;
+		for(int j=1; j<=n; j++){ //在集合V-S中寻找距离原点u最近的顶点t 
+			//如果j在V-S中并且原点到顶点j有最短路径 
+			if((!flag[j]) && (dist[j] < temp)){
+				t = j;
+				temp = dist[j];
+			}
+			if(t == u)	return; //跳出循环 
+			flag[t] = true;  //否则将t加入集合S
+			for(int j=1; j<=n; j++){  //更新集合V-S中与t邻接的顶点到原点的距离 
+				if(!flag[j] && (map[t][j]<INF)){
+					if(dist[j] > dist[t]+map[t][j]){
+						dist[j] = dist[t] + map[t][j];
+						p[j] = t;
+					}
+				} 
+			} 
+		}
+	}
+} 
+
+void findpath(int u){
+	int x;
+	stack<int>s; //引用C++自带的函数创建一个栈s
+	cout<<"源点为:"<<u<<endl;
+	for(int i=1; i<=n; i++){
+		x = p[i];
+		while(x != -1){
+			s.push(x); //将前驱依次压入栈中
+			x = p[x]; 
+		}
+		cout<<"原点到其它各顶点的最短路径为：";
+		while(!s.empty()){
+			cout<<s.top()<<"--";
+			s.pop();
+		}
+		cout<<i<<";最短距离为："<<dist[i]<<endl; 
+	} 
+}
+ 
+int main(void) {
+	int u,v,w,st;
+	system("color fc");  //控制背景颜色；windows.h 
+	cout<<"请输入城市个数："<<endl;
+	cin>>n;
+	cout<<"请输入城市之间的路线的个数："<<endl;
+	cin>>m;
+	cout<<"请输入城市之间的路线和距离："<<endl;
+	for(int i=1; i<=n; i++){
+		for(int j=1; j<=n; j++){
+			map[i][j] = INF;
+		}
+		while(m!=0){
+			cin>>u>>v>>w;
+			map[u][v] = min(map[u][v],w);  //保留最小的距离
+			m--; 
+		}
+	} 
+	cout<<"请输入小明所在的位置："<<endl;
+	cin>>st;
+	Dijkstra(st);
+	cout<<"——————————————"<<endl;
+	cout<<"小明所在位置:"<<endl;
+	for(int i=1; i<=n; i++){
+		cout<<"小明："<<st<<" - "<<"要去的地方："<<i;
+		if(dist[i] == INF){
+			cout<<"  sorry,无路可走!"<<endl;
+		} else{
+			cout<<"  最短距离为："<<dist[i]<<endl;
+		}
+	} 
+	findpath(st);
+	return 0;
+}
