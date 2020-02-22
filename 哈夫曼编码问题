@@ -1,0 +1,128 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <cstdlib>
+//哈夫曼编码 
+using namespace std;
+
+#define MAXBIT 100
+#define MAXVALUE 10000
+#define MAXLEAF 30
+#define MAXNODE MAXLEAF*2 - 1
+
+//结点结构体 
+typedef struct {
+	double weight;
+	int parent;
+	int lchild;
+	int rchild;
+	char value;
+}HNodeType;  
+
+//编码结构体 
+typedef struct{
+	int bit[MAXBIT];
+	int start; 
+}HCodeType; 
+
+HNodeType huffnode[MAXNODE]; //定义一个 结点结构体 数组
+HCodeType huffcode[MAXLEAF]; //定义一个 编码结构体 数组 
+
+//开始构造哈夫曼树(n是数组中元素也可认为是结点的个数)
+void huffman_tree(HNodeType huffnode[MAXNODE], int n){
+		// i,j是循环变量 
+		int i,j;
+		double m1,m2;
+		int x1,x2;
+		
+		//开始初始化,存放哈夫曼数组中的结点 
+		for(i=0; i<2*n-1; i++){
+			huffnode[i].weight = 0;
+			huffnode[i].parent = -1;
+			huffnode[i].lchild = -1;
+			huffnode[i].rchild = -1; 
+		} 
+		
+		//输入n个叶子结点的权值
+		for(i=0; i<n; i++){
+			cout<<"请输入结点名称以及结点权值："<<i+1<<endl;
+			cin>>huffnode[i].value>>huffnode[i].weight; 
+		} 
+		
+		//构造。取出双亲为-1且权值最小的两棵树，将它们合并成一棵新树 
+		for(i=0; i<n-1; i++){
+			//m1,m2中存放两个无父结点且结点权值最小的两个结点 
+			m1 = m2 = MAXVALUE;
+			
+			//x1,x2是构造过程中两个最小权值结点在数组中的序号
+			x1 = x2 = -1;
+			
+			//找出双亲为-1且权值最小的两棵树，将它们合并成一棵新树
+			for(j=0; j<n+i; j++){
+				if(huffnode[j].weight < m1 && huffnode[j].parent == -1){
+					m2 = m1;
+					x2 = x1;
+					m1 = huffnode[j].weight;
+					x1 = j;
+				}else if(huffnode[j].weight < m2 && huffnode[j].parent == -1){
+					m2 = huffnode[j].weight;
+					x2 = j;
+				}
+			} 
+			
+			//设置找到的两个子节点的父结点信息
+			huffnode[x1].parent = n+i; //x1的双亲为新结点编号n+i 
+			huffnode[x2].parent = n+i; //x2的双亲为新结点编号n+i 
+			huffnode[n+i].weight = m1+m2; //新结点权值之和为m1+m2 
+			huffnode[n+i].lchild = x1; //新结点n+i的左孩子为x1 
+			huffnode[n+i].rchild = x2; //新结点n+i的右孩子为x2  
+			
+			//此处还可以添加测试代码 
+		} 
+} 
+
+//开始哈夫曼编码
+void huffman_code(HCodeType huffcode[MAXLEAF], int n){
+	// 定义 一个临时变量来存放求解编码时的信息,跟bit类似 
+	HCodeType cd;
+	int i,j;
+	int c,p; 
+	for(i=0; i<n; i++){
+		cd.start = n-1;
+		c = i;
+		p = huffnode[c].parent;
+		while(p != -1){
+			//左0右1 
+			if(huffnode[c].lchild == c){
+				cd.bit[cd.start] = 0;
+			}else{
+				cd.bit[cd.start] = 1;
+			}
+			cd.start--; //start向前移动一位 
+			c = p; //c,p变量上移，准备下一循环 
+			p = huffnode[c].parent; 
+		}
+		for(j=cd.start+1; j<n; j++){
+			huffcode[i].bit[j] = cd.bit[j];
+		} 
+		huffcode[i].start = cd.start;
+	}
+} 
+
+int main( void ) {
+	int i,j,n;
+	cout<<"请输入n的值:"<<endl;
+	cin>>n;
+	huffman_tree(huffnode,n);
+	huffman_code(huffcode,n);
+	
+	//输出
+	for(i=0; i<n; i++){
+		cout<<huffnode[i].value<<"哈夫曼编码为：";
+		for(j=huffcode[i].start+1; j<n; j++){
+			cout<<huffcode[i].bit[j];
+		}
+		cout<<endl;
+	} 
+	return 0;
+}
